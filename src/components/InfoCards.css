@@ -1,0 +1,12 @@
+.container-fluid {
+    max-width: 250px;
+    min-width: 250px;
+}
+
+.buton {
+    justify-content: space-between
+}
+
+.container-fluid img{
+max-width: 235px;
+}
