@@ -1,0 +1,23 @@
+.heading {
+    justify-content: space-between;
+    border-bottom: 1px solid red;
+}
+
+.info {
+    justify-content: space-between;
+}
+
+.heading img{
+max-width: 50%;
+}
+
+.description {
+    justify-content: center;
+    align-items: center;
+    max-width: 50%;
+    min-width: 50%;
+}
+
+.infosmall {
+    justify-content: space-between;
+}
