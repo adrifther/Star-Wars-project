@@ -4,7 +4,8 @@
 }
 
 .buton {
-    justify-content: space-between
+    justify-content: space-between;
+    padding: 10px;
 }
 
 .container-fluid img{

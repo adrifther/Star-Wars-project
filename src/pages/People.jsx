@@ -1,35 +1,45 @@
-import { Link, useParams } from "react-router-dom";  // To use link for navigation and useParams to get URL parameters
-import PropTypes from "prop-types";  // To define prop types for this component
-import useGlobalReducer from "../hooks/useGlobalReducer";  // Import a custom hook for accessing the global state
+import "../css/learn-more.css"
 
-// Define and export the Single component which displays individual item details.
-export const Single = props => {
-  // Access the global state using the custom hook.
-  const { store } = useGlobalReducer()
+export const People = () => {
 
-  // Retrieve the 'theId' URL parameter using useParams hook.
-  const { theId } = useParams()
-  const singleTodo = store.todos.find(todo => todo.id === parseInt(theId));
+return (
 
-  return (
-    <div className="container text-center">
-      {/* Display the title of the todo element dynamically retrieved from the store using theId. */}
-      <h1 className="display-4">Todo: {singleTodo?.title}</h1>
-      <hr className="my-4" />  {/* A horizontal rule for visual separation. */}
-
-      {/* A Link component acts as an anchor tag but is used for client-side routing to prevent page reloads. */}
-      <Link to="/">
-        <span className="btn btn-primary btn-lg" href="#" role="button">
-          Back home
-        </span>
-      </Link>
-    </div>
-  );
-};
-
-// Use PropTypes to validate the props passed to this component, ensuring reliable behavior.
-Single.propTypes = {
-  // Although 'match' prop is defined here, it is not used in the component.
-  // Consider removing or using it as needed.
-  match: PropTypes.object
-};
+<>
+<div className="container">
+<div className="heading d-flex flex-row p-2">
+  <img src="https://cdn.unotv.com/images/2025/02/perrito-reza-y-luego-come-jpg-134917-1024x576.jpg" alt="" className="rounded"/>
+  <div className="description text-center">
+    <h1>Title</h1>
+    <p>Lorem Ipsum</p>
+  </div>
+</div>
+<div className="info d-flex flex-row p-2 text-center text-danger">
+  <div className="infosmall d-flex flex-column">
+    <div className="mb-3">info1</div>
+    <div>desc1</div>
+  </div>
+  <div>
+    <div className="mb-3">info2</div>
+    <div>desc2</div>
+  </div>
+  <div>
+    <div className="mb-3">info3</div>
+    <div>desc3</div>
+  </div>
+  <div>
+    <div className="mb-3">info4</div>
+    <div>desc4</div>
+  </div>
+  <div>
+    <div className="mb-3">info5</div>
+    <div>desc5</div>
+  </div>
+  <div>
+    <div className="mb-3">info6</div>
+    <div>desc6</div>
+  </div>
+</div>
+</div>
+</>
+)
+}
