@@ -1,4 +1,5 @@
-import "../css/learn-more.css"
+import "../css/learn-more.css";
+
 
 export const People = () => {
 
