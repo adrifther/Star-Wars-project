@@ -7,8 +7,8 @@ export const People = () => {
 
 const { theId } = useParams();
 const [peopleData, setPeopleData] = useState([]);
-const [descriptionData, setDescriptionData] = useState([]);
 const [peopleInfo, setPeopleInfo] = useState([]);
+const [peopleDesc, setPeopleDesc] = useState([]);
 
   const getPeopleData = () => {
     fetch(`https://swapi.tech/api/people/${theId}`,{
@@ -22,7 +22,6 @@ const [peopleInfo, setPeopleInfo] = useState([]);
     })
     .then(data => {
         setPeopleData(data.result.properties);
-        setDescriptionData(data.result.description)
     })
     .catch(error => {
        
@@ -30,10 +29,8 @@ const [peopleInfo, setPeopleInfo] = useState([]);
     })
   }
 
-  const solucion = peopleData.name;
-
    const getPeopleInfo = () => {
-    fetch(`https://starwars-databank-server.vercel.app/api/v1/characters/name/${solucion}`,{
+    fetch(`https://starwars-databank-server.vercel.app/api/v1/characters/name/${peopleData.name}`,{
        method: "GET",
       headers: {
         "Content-Type": "application/json"
@@ -43,8 +40,9 @@ const [peopleInfo, setPeopleInfo] = useState([]);
         return resp.json(); 
     })
     .then(data => {
-        setPeopleInfo(data);
-        console.log(data)
+        setPeopleInfo(data[0].image);
+        setPeopleDesc(data[0].description);
+        console.log(data);
     })
     .catch(error => {
        
@@ -55,8 +53,7 @@ const [peopleInfo, setPeopleInfo] = useState([]);
     useEffect(() => {
   getPeopleData();
   getPeopleInfo();
-},
- [])
+}, [peopleData, peopleInfo, peopleDesc])
 
 
 return (
@@ -64,10 +61,10 @@ return (
 <>
 <div className="container">
 <div className="heading d-flex flex-row p-2">
-  <img src={peopleInfo.image} alt="" className="rounded"/>
-  <div className="description text-center">
+  <img src={`${peopleInfo}`} alt="" className="rounded"/>
+  <div className="description text-center p-4">
     <h1>{peopleData.name}</h1>
-    <p>{descriptionData}</p>
+    <p>{peopleDesc}</p>
   </div>
 </div>
 <div className="info d-flex flex-row p-2 text-center text-danger">

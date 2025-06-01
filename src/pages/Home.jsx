@@ -11,8 +11,6 @@ export const Home = () => {
 	const [planetList, setPlanetList] = useState([]);
 	const [vehicleList, setVehicleList] = useState([]);
 
-
-	// Helper para saber si un ítem ya está en favoritos (por uid y categoría)
 	const isFavorite = (uid, category) => {
 		return (
 			Array.isArray(store.favorites) &&
@@ -34,7 +32,6 @@ export const Home = () => {
 		}
 	};
 
-
 	const getPeopleList = () => {
 		fetch('https://www.swapi.tech/api/people?page=1&limit=60', {
 			method: "GET",
@@ -52,7 +49,6 @@ export const Home = () => {
 			})
 	}
 
-
 	const getPlanetList = () => {
 		fetch('https://www.swapi.tech/api/planets?page=1&limit=60', {
 			method: "GET",
@@ -69,7 +65,6 @@ export const Home = () => {
 			.catch(error => {
 			})
 	}
-
 
 	const getVehicleList = () => {
 		fetch('https://www.swapi.tech/api/vehicles?page=1&limit=60', {
@@ -95,17 +90,16 @@ export const Home = () => {
 	},
 		[])
 
-
 	return (
 		<div className="text-start m-3">
 			<h1>People</h1>
 			<div className="overflow-x-auto d-flex flex-row gap-3 p-3">
 				{peopleList.map((person, index) => {
 					return (
-							<div className="info shadow rounded d-flex flex-column justify-content-between">
-								<InfoCards name={person.name} />
+							<div className="info shadow rounded d-flex flex-column justify-content-between" key={person.uid}>
+								<InfoCards name={person.name}/>
 								<div className="buton d-flex flex-row">
-									<Link to={`/people/${person.uid}`} key={person.uid}>
+									<Link to={`/people/${person.uid}`}>
 										<button className="btn btn-outline-primary">Learn More!</button>
 									</Link>
 									<button
@@ -125,17 +119,13 @@ export const Home = () => {
 				})
 				}
 
-
-
-
-
 			</div>
 			<h1>Vehicles</h1>
 			<div className="overflow-x-auto d-flex flex-row gap-3 p-3">
 				{vehicleList.map((vehicle, index) => {
 					return (
-							<div className="info shadow rounded d-flex flex-column justify-content-between">
-								<InfoCards name={vehicle.name} key={vehicle.uid}/>
+							<div className="info shadow rounded d-flex flex-column justify-content-between" key={vehicle.uid}>
+								<InfoCards name={vehicle.name}/>
 								<div className="buton d-flex flex-row">
 									<Link to={`/vehicles/${vehicle.uid}`}>
 										<button className="btn btn-outline-primary">Learn More!</button>
@@ -159,8 +149,8 @@ export const Home = () => {
 			<div className="overflow-x-auto d-flex flex-row gap-3 p-3">
 				{planetList.map((planet, index) => {
 					return (
-							<div className="info shadow rounded d-flex flex-column justify-content-between">
-								<InfoCards name={planet.name} key={planet.uid}/>
+							<div className="info shadow rounded d-flex flex-column justify-content-between" key={planet.uid}>
+								<InfoCards name={planet.name}/>
 								<div className="buton d-flex flex-row">
 									<Link to={`/planets/${planet.uid}`}>
 										<button className="btn btn-outline-primary">Learn More!</button>
