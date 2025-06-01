@@ -5,11 +5,10 @@ import { useParams } from "react-router-dom";
 
 export const Vehicles = () => {
 
-  const { theId } = useParams();  // ← aquí obtienes el parámetro de la URL
+  const { theId } = useParams();
   const [vehicleData, setVehicleData] = useState([]);
-
+  const [descriptionData, setDescriptionData] = useState([]);
   
-
 	const getVehicleData = () => {
 		fetch(`https://swapi.tech/api/vehicles/${theId}`,{
 			 method: "GET",
@@ -18,13 +17,11 @@ export const Vehicles = () => {
       }
     })
     .then(resp => {
-        // console.log(resp.ok); 
-        // console.log(resp.status); 
         return resp.json(); 
     })
     .then(data => {
         setVehicleData(data.result.properties);
-        // console.log(data); 
+        setDescriptionData(data.result.description)
     })
     .catch(error => {
        
@@ -45,7 +42,7 @@ return (
   <img src="https://cdn.unotv.com/images/2025/02/perrito-reza-y-luego-come-jpg-134917-1024x576.jpg" alt="" className="rounded"/>
   <div className="description text-center">
     <h1>{vehicleData.name}</h1>
-    <p>Lorem Ipsum</p>
+    <p>{descriptionData}</p>
   </div>
 </div>
 <div className="info d-flex flex-row p-2 text-center text-danger">

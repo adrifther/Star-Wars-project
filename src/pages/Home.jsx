@@ -43,17 +43,12 @@ export const Home = () => {
 			}
 		})
 			.then(resp => {
-				// console.log(resp.ok);
-				// console.log(resp.status);
 				return resp.json();
 			})
 			.then(data => {
 				setPeopleList(data.results);
-				// console.log(data.results);
 			})
 			.catch(error => {
-
-				// console.log(error);
 			})
 	}
 
@@ -66,17 +61,12 @@ export const Home = () => {
 			}
 		})
 			.then(resp => {
-				// console.log(resp.ok);
-				// console.log(resp.status);
 				return resp.json();
 			})
 			.then(data => {
 				setPlanetList(data.results);
-				// console.log(data.results);
 			})
 			.catch(error => {
-
-				// console.log(error);
 			})
 	}
 
@@ -89,20 +79,14 @@ export const Home = () => {
 			}
 		})
 			.then(resp => {
-				// console.log(resp.ok);
-				// console.log(resp.status);
 				return resp.json();
 			})
 			.then(data => {
 				setVehicleList(data.results);
-				// console.log(data.results);
 			})
 			.catch(error => {
-
-				// console.log(error);
 			})
 	}
-
 
 	useEffect(() => {
 		getPeopleList();
@@ -116,12 +100,9 @@ export const Home = () => {
 		<div className="text-start m-3">
 			<h1>People</h1>
 			<div className="overflow-x-auto d-flex flex-row gap-3 p-3">
-
-
-
 				{peopleList.map((person, index) => {
 					return (
-							<div className="shadow rounded">
+							<div className="info shadow rounded d-flex flex-column justify-content-between">
 								<InfoCards name={person.name} />
 								<div className="buton d-flex flex-row">
 									<Link to={`/people/${person.uid}`} key={person.uid}>
@@ -153,7 +134,7 @@ export const Home = () => {
 			<div className="overflow-x-auto d-flex flex-row gap-3 p-3">
 				{vehicleList.map((vehicle, index) => {
 					return (
-							<div className="shadow rounded">
+							<div className="info shadow rounded d-flex flex-column justify-content-between">
 								<InfoCards name={vehicle.name} key={vehicle.uid}/>
 								<div className="buton d-flex flex-row">
 									<Link to={`/vehicles/${vehicle.uid}`}>
@@ -178,7 +159,7 @@ export const Home = () => {
 			<div className="overflow-x-auto d-flex flex-row gap-3 p-3">
 				{planetList.map((planet, index) => {
 					return (
-							<div className="shadow rounded">
+							<div className="info shadow rounded d-flex flex-column justify-content-between">
 								<InfoCards name={planet.name} key={planet.uid}/>
 								<div className="buton d-flex flex-row">
 									<Link to={`/planets/${planet.uid}`}>
