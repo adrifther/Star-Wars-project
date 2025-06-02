@@ -82,7 +82,7 @@ export const getPeopleDetailsById = async (id) => {
 export const getPlanetById = async (id) => {
     try {
         const response = await swapiService.get(`/planets/${id}`);
-        return response.data.result.properties;
+        return response.data.result;
     }
     catch (error) {
         console.error(`Error fetching planet with ID ${id}:`, error);
