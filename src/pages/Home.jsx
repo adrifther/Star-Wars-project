@@ -32,54 +32,6 @@ export const Home = () => {
     }
   };
 
-  //   const getPeopleList = () => {
-  //     fetch('https://www.swapi.tech/api/people?page=1&limit=60', {
-  //       method: 'GET',
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //       },
-  //     })
-  //       .then((resp) => {
-  //         return resp.json();
-  //       })
-  //       .then((data) => {
-  //         setPeopleList(data.results);
-  //       })
-  //       .catch((error) => {});
-  //   };
-
-  //   const getPlanetList = () => {
-  //     fetch('https://www.swapi.tech/api/planets?page=1&limit=60', {
-  //       method: 'GET',
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //       },
-  //     })
-  //       .then((resp) => {
-  //         return resp.json();
-  //       })
-  //       .then((data) => {
-  //         setPlanetList(data.results);
-  //       })
-  //       .catch((error) => {});
-  //   };
-
-  //   const getVehicleList = () => {
-  //     fetch('https://www.swapi.tech/api/vehicles?page=1&limit=60', {
-  //       method: 'GET',
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //       },
-  //     })
-  //       .then((resp) => {
-  //         return resp.json();
-  //       })
-  //       .then((data) => {
-  //         setVehicleList(data.results);
-  //       })
-  //       .catch((error) => {});
-  //   };
-
   useEffect(() => {
     const fetchPeopleList = async () => {
       try {
@@ -89,10 +41,6 @@ export const Home = () => {
         console.error(error);
       }
     };
-    fetchPeopleList();
-  }, []);
-
-  useEffect(() => {
     const fetchPlanetList = async () => {
       try {
         const planet = await getAllPlanets();
@@ -109,6 +57,7 @@ export const Home = () => {
         console.error(error);
       }
     };
+    fetchPeopleList();
     fetchVehicleList();
     fetchPlanetList();
   }, []);
