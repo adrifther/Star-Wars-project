@@ -1,20 +1,103 @@
 import { InfoCards } from '../components/InfoCards.jsx';
 import useGlobalReducer from '../hooks/useGlobalReducer.jsx';
 import { Link } from 'react-router-dom';
-import React, { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import '../components/InfoCards.css';
-import { getAllPeople, getAllPlanets, getAllVehicles } from '../services/ApiService.js';
+import ApiService from '../services/ApiService.js';
 
 export const Home = () => {
   const { store, dispatch } = useGlobalReducer();
-  const [peopleList, setPeopleList] = useState([]);
-  const [planetList, setPlanetList] = useState([]);
-  const [vehicleList, setVehicleList] = useState([]);
+
+  useEffect(() => {
+    const fetchAll = async () => {
+      try {
+        const [character, planets, vehicles] = await Promise.all([
+          ApiService.getAllPeople(),
+          ApiService.getAllPlanets(),
+          ApiService.getAllVehicles(),
+        ]);
+
+        dispatch({ type: 'update_character_list', payload: character });
+        dispatch({ type: 'update_planet_list', payload: planets });
+        dispatch({ type: 'update_vehicle_list', payload: vehicles });
+
+        const fetchCaracterImg = await Promise.all(
+          character.map(async (character) => {
+            try {
+              const characterData = await ApiService.getPeopleDetailsByName(character.name);
+
+              return {
+                ...character,
+                image: characterData?.image || '',
+                description: characterData?.description || '',
+              };
+            } catch (error) {
+              console.warn(`No se encontró info adicional para: ${character.name}`);
+              return character; // lo devolvemos sin cambios si falla
+            }
+          })
+        );
+
+        dispatch({ type: 'update_character_list', payload: fetchCaracterImg });
+
+        const fetchCharacterDetails = await Promise.all(
+          character.map(async (character) => {
+            try {
+              const characterData = await ApiService.getPeopleDetailsById(character.uid);
+              return {
+                ...character,
+                gender: characterData.gender,
+                eye_color: characterData.eye_color,
+                skin_color: character.skin_color,
+                hair_color: characterData.hair_color,
+                height: characterData.height,
+                mass: characterData.mass,
+                homeworld: characterData.homeworld,
+              };
+            } catch (error) {
+              console.warn(`No se encontró info adicional para: ${character.name}`);
+              return character; // lo devolvemos sin cambios si falla
+            }
+          })
+        );
+
+        dispatch({ type: 'update_character_list', payload: fetchCharacterDetails });
+      } catch (error) {
+        console.error('Error fetching lists:', error);
+      }
+    };
+
+    fetchAll();
+    console.log('Character fetched', store.characterList);
+  }, []);
+
+  // useEffect(() => {
+  //   const fetchCharacter = async () => {
+  //     for (const character of store.characterList) {
+  //       try {
+  //         const characterData = await ApiService.getPeopleDetailsByName(character.name);
+  //         dispatch({
+  //           type: 'update_character_list_item',
+  //           payload: {
+  //             name: character.name,
+  //             image: characterData.image,
+  //             description: characterData.description,
+  //           },
+  //         });
+  //       } catch (error) {
+  //         console.error(`Error fetching character details for ${character.name}:`, error);
+  //       }
+  //     }
+  //   };
+
+  //   fetchCharacter();
+  //   console.log('Character fetched', store.characterList);
+  // }, [store.characterList]);
 
   const isFavorite = (uid, category) => {
     return (
-      Array.isArray(store.favorites) &&
-      store.favorites.some((fav) => fav.uid === uid && fav.category === category)
+      Array.isArray(store.favoriteList) &&
+      store.favoriteList.some((fav) => fav.uid === uid && fav.category === category)
     );
   };
 
@@ -32,72 +115,17 @@ export const Home = () => {
     }
   };
 
-  useEffect(() => {
-    const fetchPeopleList = async () => {
-      try {
-        const people = await getAllPeople();
-        setPeopleList(people);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    const fetchPlanetList = async () => {
-      try {
-        const planet = await getAllPlanets();
-        setPlanetList(planet);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    const fetchVehicleList = async () => {
-      try {
-        const vehicles = await getAllVehicles();
-        setVehicleList(vehicles);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    fetchPeopleList();
-    fetchVehicleList();
-    fetchPlanetList();
-  }, []);
-
-  console.log('planetList', planetList);
-  console.log('vehicleList', vehicleList);
-
   return (
     <div className="text-start m-3">
       <h1>People</h1>
       <div className="overflow-x-auto d-flex flex-row gap-3 p-3">
-        {peopleList.map((person, index) => {
-          return (
-            // <div
-            //   className="info shadow rounded d-flex flex-column justify-content-between"
-            //   key={person.uid}
-            // >
-            <InfoCards person={person} />
-            //   <div className="buton d-flex flex-row">
-            //     <Link to={`/people/${person.uid}`}>
-            //       <button className="btn btn-outline-primary">Learn More!</button>
-            //     </Link>
-            //     <button
-            //       className="btn btn-outline-warning"
-            //       onClick={() => toggleFavorite(person, 'people')}
-            //     >
-            //       {isFavorite(person.uid, 'people') ? (
-            //         <i className="fa-solid fa-heart"></i>
-            //       ) : (
-            //         <i className="fa-regular fa-heart"></i>
-            //       )}
-            //     </button>
-            //   </div>
-            // </div>
-          );
+        {store.characterList.map((person, index) => {
+          return <InfoCards key={person.uid} element={person} />;
         })}
       </div>
       <h1>Vehicles</h1>
       <div className="overflow-x-auto d-flex flex-row gap-3 p-3">
-        {vehicleList.map((vehicle, index) => {
+        {store.vehicleList.map((vehicle, index) => {
           return (
             <div
               className="info shadow rounded d-flex flex-column justify-content-between"
@@ -125,7 +153,7 @@ export const Home = () => {
       </div>
       <h1>Planets</h1>
       <div className="overflow-x-auto d-flex flex-row gap-3 p-3">
-        {planetList.map((planet, index) => {
+        {store.planetList.map((planet, index) => {
           return (
             <div
               className="info shadow rounded d-flex flex-column justify-content-between"

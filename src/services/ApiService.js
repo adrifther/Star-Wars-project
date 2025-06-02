@@ -5,6 +5,7 @@ const PEOPLE_URL = 'https://starwars-databank-server.vercel.app/api/v1/character
 const PLANETS_URL = 'https://starwars-databank-server.vercel.app/api/v1/planets/name/';
 const VEHICLES_URL = 'https://starwars-databank-server.vercel.app/api/v1/vehicles/name/';
 
+
 const swapiService = axios.create({
   baseURL: BASE_URL,
   headers: {
@@ -67,7 +68,7 @@ export const getAllVehicles = async () => {
     }
 }
 
-export const getPersonById = async (id) => {
+export const getPeopleDetailsById = async (id) => {
     try {
         const response = await swapiService.get(`/people/${id}`);
         return response.data.result.properties;
@@ -103,7 +104,7 @@ export const getVehicleById = async (id) => {
 export const getPeopleDetailsByName = async (name) => {
     try {
         const response = await peopleService.get(name);
-        return response.data;
+        return response.data[0];
     }
     catch (error) {
         console.error(`Error fetching details for ${name}:`, error);
@@ -114,7 +115,7 @@ export const getPeopleDetailsByName = async (name) => {
 export const getPlanetsDetailsByName = async (name) => {
     try {
         const response = await planetsService.get(name);
-        return response.data;
+        return response.data[0];
     }
     catch (error) {
         console.error(`Error fetching details for ${name}:`, error);
@@ -133,3 +134,14 @@ export const getVehiclesDetailsByName = async (name) => {
     }
 }
 
+export default {
+    getAllPeople,
+    getAllPlanets,
+    getAllVehicles,
+    getPeopleDetailsById,
+    getPlanetById,
+    getVehicleById,
+    getPeopleDetailsByName,
+    getPlanetsDetailsByName,
+    getVehiclesDetailsByName
+};
