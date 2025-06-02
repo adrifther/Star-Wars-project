@@ -4,9 +4,6 @@ import { useParams } from 'react-router-dom';
 
 export const People = () => {
   const { theId } = useParams();
-  const [peopleData, setPeopleData] = useState([]);
-  const [peopleInfo, setPeopleInfo] = useState([]);
-  const [peopleDesc, setPeopleDesc] = useState([]);
 
   const getPeopleData = () => {
     fetch(`https://swapi.tech/api/people/${theId}`, {
@@ -39,7 +36,6 @@ export const People = () => {
       .then((data) => {
         setPeopleInfo(data[0].image);
         setPeopleDesc(data[0].description);
-        // console.log(data);
       })
       .catch((error) => {
         console.log(error);
