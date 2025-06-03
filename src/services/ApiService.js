@@ -2,7 +2,7 @@ import axios from 'axios';
 
 const BASE_URL = 'https://www.swapi.tech/api'
 const PEOPLE_URL = 'https://starwars-databank-server.vercel.app/api/v1/characters/name/';
-const PLANETS_URL = 'https://starwars-databank-server.vercel.app/api/v1/planets/name/';
+const PLANETS_URL = 'https://starwars-databank-server.vercel.app/api/v1/locations/name/';
 const VEHICLES_URL = 'https://starwars-databank-server.vercel.app/api/v1/vehicles/name/';
 
 
@@ -37,7 +37,7 @@ const vehiclesService = axios.create({
 
 export const getAllPeople = async () => {
     try{
-        const response = await swapiService.get('/people?page=1&limit=60');
+        const response = await swapiService.get('/people?page=1&limit=10');
         return response.data.results;
     }
     catch(error) {
@@ -48,7 +48,7 @@ export const getAllPeople = async () => {
 
 export const getAllPlanets = async () => {
     try{
-        const response = await swapiService.get('/planets?page=1&limit=60');
+        const response = await swapiService.get('/planets?page=1&limit=10');
         return response.data.results;
     }
     catch(error) {
@@ -59,7 +59,7 @@ export const getAllPlanets = async () => {
 
 export const getAllVehicles = async () => {
     try{
-        const response = await swapiService.get('/vehicles?page=1&limit=60');
+        const response = await swapiService.get('/vehicles?page=1&limit=10');
         return response.data.results;
     }
     catch(error) {

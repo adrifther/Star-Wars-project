@@ -21,78 +21,125 @@ export const Home = () => {
         dispatch({ type: 'update_planet_list', payload: planets });
         dispatch({ type: 'update_vehicle_list', payload: vehicles });
 
-        const fetchCaracterImg = await Promise.all(
-          character.map(async (character) => {
-            try {
-              const characterData = await ApiService.getPeopleDetailsByName(character.name);
+        const completeCharacter = await Promise.all(
+          character.map(async (char) => {
+            let characterDetailsByName = {};
+            let characterDetailsById = {};
 
-              return {
-                ...character,
-                image: characterData?.image || '',
-                description: characterData?.description || '',
-              };
-            } catch (error) {
-              console.warn(`No se encontró info adicional para: ${character.name}`);
-              return character; // lo devolvemos sin cambios si falla
+            try {
+              const nameData = await ApiService.getPeopleDetailsByName(char.name);
+              if (nameData && typeof nameData === 'object') {
+                characterDetailsByName = nameData;
+              }
+            } catch (e) {
+              console.warn(`No image/desc for ${char.name}`);
             }
+
+            try {
+              characterDetailsById = await ApiService.getPeopleDetailsById(char.uid);
+            } catch (e) {
+              console.warn(`No extra info for ${char.name}`);
+            }
+
+            return {
+              ...char,
+              image: characterDetailsByName.image,
+              description: characterDetailsByName.description || '',
+              gender: characterDetailsById.gender || '',
+              eye_color: characterDetailsById.eye_color || '',
+              skin_color: characterDetailsById.skin_color || '',
+              hair_color: characterDetailsById.hair_color || '',
+              height: characterDetailsById.height || '',
+              mass: characterDetailsById.mass || '',
+              homeworld: characterDetailsById.homeworld || '',
+            };
           })
         );
 
-        dispatch({ type: 'update_character_list', payload: fetchCaracterImg });
+        const completePlanet = await Promise.all(
+          planets.map(async (char) => {
+            let planetDetailsByName = {};
+            let planetDetailsById = {};
 
-        const fetchCharacterDetails = await Promise.all(
-          character.map(async (character) => {
             try {
-              const characterData = await ApiService.getPeopleDetailsById(character.uid);
-              return {
-                ...character,
-                gender: characterData.gender,
-                eye_color: characterData.eye_color,
-                skin_color: character.skin_color,
-                hair_color: characterData.hair_color,
-                height: characterData.height,
-                mass: characterData.mass,
-                homeworld: characterData.homeworld,
-              };
-            } catch (error) {
-              console.warn(`No se encontró info adicional para: ${character.name}`);
-              return character; // lo devolvemos sin cambios si falla
+              const nameData = await ApiService.getPlanetsDetailsByName(char.name);
+              if (nameData && typeof nameData === 'object') {
+                planetDetailsByName = nameData;
+              }
+            } catch (e) {
+              console.warn(`No image/desc for ${char.name}`);
             }
+
+            try {
+              planetDetailsById = await ApiService.getPlanetById(char.uid);
+            } catch (e) {
+              console.warn(`No extra info for ${char.name}`);
+            }
+
+            return {
+              ...char,
+              image: planetDetailsByName.image,
+              description: planetDetailsByName.description || '',
+              climate: planetDetailsById.climate,
+              terrain: planetDetailsById.terrain,
+              population: planetDetailsById.population,
+              diameter: planetDetailsById.diameter,
+              rotation_period: planetDetailsById.rotation_period,
+              orbital_period: planetDetailsById.orbital_period,
+              gravity: planetDetailsById.gravity,
+              surface_water: planetDetailsById.surface_water,
+            };
           })
         );
 
-        dispatch({ type: 'update_character_list', payload: fetchCharacterDetails });
+        const completeVehicle = await Promise.all(
+          vehicles.map(async (car) => {
+            let vehicleDetailsByName = {};
+            let vehicleDetailsById = {};
+
+            try {
+              const nameData = await ApiService.getVehiclesDetailsByName(car.name);
+              if (nameData && typeof nameData === 'object') {
+                vehicleDetailsByName = nameData;
+              }
+            } catch (e) {
+              console.warn(`No image/desc for ${car.name}`);
+            }
+
+            try {
+              planetDetailsById = await ApiService.getVehicleById(car.uid);
+            } catch (e) {
+              console.warn(`No extra info for ${car.name}`);
+            }
+
+            return {
+              ...car,
+              image: vehicleDetailsByName.image,
+              description: vehicleDetailsByName.description || '',
+              model: vehicleDetailsById.model,
+              manufacturer: vehicleDetailsById.manufacturer,
+              cost_in_credits: vehicleDetailsById.cost_in_credits,
+              max_atmosphering_speed: vehicleDetailsById.max_atmosphering_speed,
+              crew: vehicleDetailsById.crew,
+              passengers: vehicleDetailsById.passengers,
+              cargo_capacity: vehicleDetailsById.cargo_capacity,
+              consumables: vehicleDetailsById.consumables,
+            };
+          })
+        );
+        dispatch({ type: 'update_character_list', payload: completeCharacter });
+        dispatch({ type: 'update_planet_list', payload: completePlanet });
+        dispatch({ type: 'update_vehicle_list', payload: completeVehicle });
       } catch (error) {
         console.error('Error fetching lists:', error);
       }
     };
 
     fetchAll();
-    console.log('Character fetched', store.characterList);
+    console.log('character fetched', store.characterList);
+    console.log('planet fetched', store.planetList);
+    console.log('vehicle fetched', store.vehicleList);
   }, []);
-
-  // useEffect(() => {
-  //   const fetchCharacter = async () => {
-  //     for (const character of store.characterList) {
-  //       try {
-  //         const characterData = await ApiService.getPeopleDetailsByName(character.name);
-  //         dispatch({
-  //           type: 'update_character_list_item',
-  //           payload: {
-  //             name: character.name,
-  //             image: characterData.image,
-  //             description: characterData.description,
-  //           },
-  //         });
-  //       } catch (error) {
-  //         console.error(`Error fetching character details for ${character.name}:`, error);
-  //       }
-  //     }
-  //   };
-
-  //   fetchCharacter();
-  //   console.log('Character fetched', store.characterList);
-  // }, [store.characterList]);
 
   const isFavorite = (uid, category) => {
     return (
@@ -123,60 +170,17 @@ export const Home = () => {
           return <InfoCards key={person.uid} element={person} />;
         })}
       </div>
-      <h1>Vehicles</h1>
-      <div className="overflow-x-auto d-flex flex-row gap-3 p-3">
-        {store.vehicleList.map((vehicle, index) => {
-          return (
-            <div
-              className="info shadow rounded d-flex flex-column justify-content-between"
-              key={vehicle.uid}
-            >
-              {/* <InfoCards name={vehicle.name} /> */}
-              <div className="buton d-flex flex-row">
-                <Link to={`/vehicles/${vehicle.uid}`}>
-                  <button className="btn btn-outline-primary">Learn More!</button>
-                </Link>
-                <button
-                  onClick={() => toggleFavorite(person.uid, 'vehicle')}
-                  className="btn btn-outline-warning"
-                >
-                  {isFavorite(vehicle.uid, 'vehicles') ? (
-                    <i className="fa-solid fa-heart"></i>
-                  ) : (
-                    <i className="fa-regular fa-heart"></i>
-                  )}
-                </button>
-              </div>
-            </div>
-          );
-        })}
-      </div>
+
       <h1>Planets</h1>
       <div className="overflow-x-auto d-flex flex-row gap-3 p-3">
         {store.planetList.map((planet, index) => {
-          return (
-            <div
-              className="info shadow rounded d-flex flex-column justify-content-between"
-              key={planet.uid}
-            >
-              {/* <InfoCards name={planet.name} /> */}
-              <div className="buton d-flex flex-row">
-                <Link to={`/planets/${planet.uid}`}>
-                  <button className="btn btn-outline-primary">Learn More!</button>
-                </Link>
-                <button
-                  onClick={() => toggleFavorite(planet.uid, 'planet')}
-                  className="btn btn-outline-warning"
-                >
-                  {isFavorite(planet.uid, 'planets') ? (
-                    <i className="fa-solid fa-heart"></i>
-                  ) : (
-                    <i className="fa-regular fa-heart"></i>
-                  )}
-                </button>
-              </div>
-            </div>
-          );
+          return <InfoCards key={planet.uid} element={planet} />;
+        })}
+      </div>
+      <h1>Vehicles</h1>
+      <div className="overflow-x-auto d-flex flex-row gap-3 p-3">
+        {store.vehicleList.map((vehicle, index) => {
+          return <InfoCards key={vehicle.uid} element={vehicle} />;
         })}
       </div>
     </div>
