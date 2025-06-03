@@ -9,6 +9,7 @@ export const Home = () => {
   const { store, dispatch } = useGlobalReducer();
 
   useEffect(() => {
+
     const fetchAll = async () => {
       try {
         const [character, planets, vehicles] = await Promise.all([
@@ -140,6 +141,113 @@ export const Home = () => {
     console.log('planet fetched', store.planetList);
     console.log('vehicle fetched', store.vehicleList);
   }, []);
+  const fetchAll = async () => {
+    try {
+      const [character, planets, vehicles] = await Promise.all([
+        ApiService.getAllPeople(),
+        ApiService.getAllPlanets(),
+        ApiService.getAllVehicles(),
+      ]);
+
+      dispatch({ type: 'update_character_list', payload: character });
+      dispatch({ type: 'update_planet_list', payload: planets });
+      dispatch({ type: 'update_vehicle_list', payload: vehicles });
+
+      // 1. Agregar imágenes y descripciones a personajes
+      const fetchCaracterImg = await Promise.all(
+        character.map(async (character) => {
+          try {
+            const characterData = await ApiService.getPeopleDetailsByName(character.name);
+            return {
+              ...character,
+              image: characterData?.image || '',
+              description: characterData?.description || '',
+            };
+          } catch (error) {
+            console.warn(`No se encontró info adicional para: ${character.name}`);
+            return character;
+          }
+        })
+      );
+
+      dispatch({ type: 'update_character_list', payload: fetchCaracterImg });
+
+      // 2. Agregar detalles por UID a personajes
+      const fetchCharacterDetails = await Promise.all(
+        character.map(async (character) => {
+          try {
+            const characterData = await ApiService.getPeopleDetailsById(character.uid);
+            return {
+              ...character,
+              gender: characterData.gender,
+              eye_color: characterData.eye_color,
+              skin_color: character.skin_color,
+              hair_color: characterData.hair_color,
+              height: characterData.height,
+              mass: characterData.mass,
+              homeworld: characterData.homeworld,
+            };
+          } catch (error) {
+            return character;
+          }
+        })
+      );
+
+      dispatch({ type: 'update_character_list', payload: fetchCharacterDetails });
+
+      // 3. Agregar imágenes y descripciones a planetas
+      const fetchPlanetImg = await Promise.all(
+        planets.map(async (planet) => {
+          try {
+            const planetData = await ApiService.getPlanetsDetailsByName(planet.name);
+            return {
+              ...planet,
+              image: planetData?.image || '',
+              description: planetData?.description || '',
+            };
+          } catch (error) {
+            return planet;
+          }
+        })
+      );
+
+      dispatch({ type: 'update_planet_list', payload: fetchPlanetImg });
+
+      // 4. Agregar detalles por UID a planetas
+      const fetchPlanetDetails = await Promise.all(
+        planets.map(async (planet) => {
+          try {
+            const planetData = await ApiService.getPlanetById(planet.uid);
+            return {
+              ...planet,
+              climate: planetData.climate,
+              terrain: planetData.terrain,
+              population: planet.population,
+              diameter: planetData.diameter,
+              rotation_period: planetData.rotation_period,
+              orbital_period: planetData.orbital_period,
+              gravity: planetData.gravity,
+              surface_water: planetData.surface_water,
+            };
+          } catch (error) {
+            console.warn(`No se encontró info adicional para: ${planet.name}`);
+            return planet;
+          }
+        })
+      );
+
+      dispatch({ type: 'update_planet_list', payload: fetchPlanetDetails });
+
+    } catch (error) {
+      console.error('Error fetching lists:', error);
+    }
+  };
+
+  fetchAll();
+  console.log('Character fetched', store.characterList);
+  console.log('Planet fetched', store.planetList);
+  console.log('Vehicle fetched', store.vehicleList);
+}, []);
 
   const isFavorite = (uid, category) => {
     return (
