@@ -72,6 +72,8 @@ export default function storeReducer(store, action = {}) {
           character.name === action.payload.name ? { ...character, ...action.payload } : character
         )
       };
+
+
       case 'update_planet_list':
     
         const planetList = action.payload
@@ -80,6 +82,15 @@ export default function storeReducer(store, action = {}) {
           ...store,
           planetList
         };
+
+         case 'update_planet_list_item':
+      return {
+        ...store,
+        planetsList: store.planetsList.map(planets =>
+          planets.name === action.payload.name ? { ...planets, ...action.payload } : planets
+        )
+      };
+
     case 'update_vehicle_list':
       const vehicleList = action.payload
 
