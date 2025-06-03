@@ -44,7 +44,6 @@ export const initialStore=()=>{
       model: '',
       manufacturer: '',
       cost_in_credits: '',
-      length: '',
       max_atmosphering_speed: '',
       crew: '',
       passengers: '',
