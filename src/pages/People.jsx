@@ -1,89 +1,50 @@
-import '../css/learn-more.css';
-import { useEffect, useState } from 'react';
+// src/pages/PeoplePage.jsx
 import { useParams } from 'react-router-dom';
+import useGlobalReducer from '../hooks/useGlobalReducer.jsx';
 
 export const People = () => {
-  const { theId } = useParams();
+  const { store } = useGlobalReducer();
+  const { uid } = useParams();
 
-  const getPeopleData = () => {
-    fetch(`https://swapi.tech/api/people/${theId}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
-      .then((resp) => {
-        return resp.json();
-      })
-      .then((data) => {
-        setPeopleData(data.result.properties);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
+  const character = store.characterList.find((c) => c.uid === uid);
 
-  const getPeopleInfo = () => {
-    fetch(`https://starwars-databank-server.vercel.app/api/v1/characters/name/${peopleData.name}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
-      .then((resp) => {
-        return resp.json();
-      })
-      .then((data) => {
-        setPeopleInfo(data[0].image);
-        setPeopleDesc(data[0].description);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
-
-  useEffect(() => {
-    getPeopleData();
-    getPeopleInfo();
-  }, [peopleData, peopleInfo, peopleDesc]);
+  if (!character) {
+    return <p className="m-3">Cargando personaje...</p>;
+  }
 
   return (
-    <>
-      <div className="container">
-        <div className="heading d-flex flex-row p-2">
-          <img src={`${peopleInfo}`} alt="" className="rounded" />
-          <div className="description text-center p-4">
-            <h1>{peopleData.name}</h1>
-            <p>{peopleDesc}</p>
+    <div className="container mt-5">
+      <div className="row align-items-center">
+        {character.image && (
+          <div className="col-md-4">
+            <img src={character.image} alt={character.name} className="img-fluid rounded shadow" />
           </div>
-        </div>
-        <div className="info d-flex flex-row p-2 text-center text-danger">
-          <div className="infosmall d-flex flex-column">
-            <div className="mb-3">Gender</div>
-            <div>{peopleData.gender}</div>
-          </div>
-          <div>
-            <div className="mb-3">Skin Color</div>
-            <div>{peopleData.skin_color}</div>
-          </div>
-          <div>
-            <div className="mb-3">Hair Color</div>
-            <div>{peopleData.hair_color}</div>
-          </div>
-          <div>
-            <div className="mb-3">Height</div>
-            <div>{peopleData.height}</div>
-          </div>
-          <div>
-            <div className="mb-3">Eye Color</div>
-            <div>{peopleData.eye_color}</div>
-          </div>
-          <div>
-            <div className="mb-3">Mass</div>
-            <div>{peopleData.mass}</div>
-          </div>
+        )}
+        <div className="col-md-8">
+          <h1>{character.name}</h1>
+          <p>{character.description || 'Sin descripción disponible.'}</p>
+          <ul className="list-group mt-3">
+            <li className="list-group-item">
+              <strong>Género:</strong> {character.gender}
+            </li>
+            <li className="list-group-item">
+              <strong>Color de ojos:</strong> {character.eye_color}
+            </li>
+            <li className="list-group-item">
+              <strong>Color de piel:</strong> {character.skin_color}
+            </li>
+            <li className="list-group-item">
+              <strong>Color de cabello:</strong> {character.hair_color}
+            </li>
+            <li className="list-group-item">
+              <strong>Altura:</strong> {character.height}
+            </li>
+            <li className="list-group-item">
+              <strong>Masa:</strong> {character.mass}
+            </li>
+          </ul>
         </div>
       </div>
-    </>
+    </div>
   );
 };

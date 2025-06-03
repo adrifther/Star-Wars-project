@@ -1,11 +1,9 @@
 import './InfoCards.css';
-import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
 
-export const InfoCards = ({ element }) => {
+export const InfoCards = ({ element, children }) => {
   return (
     <>
-      {element.image && (
+      {element.image ? (
         <div className="info shadow rounded container-fluid rounded p-2">
           <img src={element.image} className="rounded" alt="..." />
           <div className="body">
@@ -15,19 +13,24 @@ export const InfoCards = ({ element }) => {
             <p className="text fs-5">Eye Color: {element.eye_color}</p>
           </div>
           <div className="buton d-flex flex-row">
-            <Link to={`/people/${element.uid}`}>
-              <button className="btn btn-outline-primary">Learn More!</button>
-            </Link>
-            <button
-              className="btn btn-outline-warning"
-              // onClick={() => toggleFavorite(person, 'people')}
-            >
-              {/* {isFavorite(person.uid, 'people') ? ( */}
-              <i className="fa-solid fa-heart"></i>
-              {/* ) : ( */}
-              {/* <i className="fa-regular fa-heart"></i> */}
-              {/* )} */}
-            </button>
+            <div className="d-flex justify-content-between w-75 p-2">{children}</div>
+          </div>
+        </div>
+      ) : (
+        <div className="info shadow rounded container-fluid rounded p-2">
+          <img
+            src={'https://wallpapers.com/images/featured/logo-de-star-wars-xcw4lfbj6xjx2qvm.jpg'}
+            className="rounded"
+            alt="..."
+          />
+          <div className="body">
+            <p className="text fs-2">{element.name}</p>
+            <p className="text fs-5">id: {element.uid}</p>
+            <p className="text fs-5">Gender: {element.gender}</p>
+            <p className="text fs-5">Eye Color: {element.eye_color}</p>
+          </div>
+          <div className="buton d-flex flex-row">
+            <div className="d-flex justify-content-between w-75 p-2">{children}</div>
           </div>
         </div>
       )}

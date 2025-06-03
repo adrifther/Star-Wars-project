@@ -1,76 +1,56 @@
-import "../css/learn-more.css";
-import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+// src/pages/PlanetPage.jsx
+import { useParams } from 'react-router-dom';
+import useGlobalReducer from '../hooks/useGlobalReducer.jsx';
 
 export const Planets = () => {
+  const { store } = useGlobalReducer();
+  const { uid } = useParams();
 
-const { theId } = useParams();
-const [planetData, setPlanetData] = useState([]);
-const [descriptionData, setDescriptionData] = useState([]);
+  const planet = store.planetList.find((p) => p.uid === uid);
 
-  const getPlanetData = () => {
-    fetch(`https://swapi.tech/api/planets/${theId}`,{
-       method: "GET",
-      headers: {
-        "Content-Type": "application/json"
-      }
-    })
-    .then(resp => {
-        return resp.json(); 
-    })
-    .then(data => {
-        setPlanetData(data.result.properties);
-        setDescriptionData(data.result.description)
-    })
-    .catch(error => {
-       
-        console.log(error);
-    })
+  if (!planet) {
+    return <p className="m-3">Cargando planeta...</p>;
   }
 
-    useEffect(() => {
-  getPlanetData();
-},
- [])
-
-return (
-
-<>
-<div className="container">
-<div className="heading d-flex flex-row p-2">
-  <img src="https://cdn.unotv.com/images/2025/02/perrito-reza-y-luego-come-jpg-134917-1024x576.jpg" alt="" className="rounded"/>
-  <div className="description text-center">
-    <h1>{planetData.name}</h1>
-    <p>{descriptionData}</p>
-  </div>
-</div>
-<div className="info d-flex flex-row p-2 text-center text-danger">
-  <div className="infosmall d-flex flex-column">
-    <div className="mb-3">Climate</div>
-    <div>{planetData.climate}</div>
-  </div>
-  <div>
-    <div className="mb-3">Diameter</div>
-    <div>{planetData.diameter}</div>
-  </div>
-  <div>
-    <div className="mb-3">Terrain</div>
-    <div>{planetData.terrain}</div>
-  </div>
-  <div>
-    <div className="mb-3">Gravity</div>
-    <div>{planetData.gravity}</div>
-  </div>
-  <div>
-    <div className="mb-3">Orbital Period</div>
-    <div>{planetData.orbital_period}</div>
-  </div>
-  <div>
-    <div className="mb-3">Population</div>
-    <div>{planetData.population}</div>
-  </div>
-</div>
-</div>
-</>
-)
-}
+  return (
+    <div className="container mt-5">
+      <div className="row align-items-center">
+        {planet.image && (
+          <div className="col-md-4">
+            <img src={planet.image} alt={planet.name} className="img-fluid rounded shadow" />
+          </div>
+        )}
+        <div className="col-md-8">
+          <h1>{planet.name}</h1>
+          <p>{planet.description || 'Sin descripción disponible.'}</p>
+          <ul className="list-group mt-3">
+            <li className="list-group-item">
+              <strong>Clima:</strong> {planet.climate}
+            </li>
+            <li className="list-group-item">
+              <strong>Terreno:</strong> {planet.terrain}
+            </li>
+            <li className="list-group-item">
+              <strong>Población:</strong> {planet.population}
+            </li>
+            <li className="list-group-item">
+              <strong>Diámetro:</strong> {planet.diameter}
+            </li>
+            <li className="list-group-item">
+              <strong>Periodo de rotación:</strong> {planet.rotation_period}
+            </li>
+            <li className="list-group-item">
+              <strong>Periodo orbital:</strong> {planet.orbital_period}
+            </li>
+            <li className="list-group-item">
+              <strong>Gravedad:</strong> {planet.gravity}
+            </li>
+            <li className="list-group-item">
+              <strong>Agua superficial:</strong> {planet.surface_water}
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  );
+};

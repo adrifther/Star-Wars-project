@@ -1,12 +1,15 @@
 import { InfoCards } from '../components/InfoCards.jsx';
+import Loader from '../components/Loader/Loader.jsx';
 import useGlobalReducer from '../hooks/useGlobalReducer.jsx';
-import { Link } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import '../components/InfoCards.css';
 import ApiService from '../services/ApiService.js';
 
 export const Home = () => {
   const { store, dispatch } = useGlobalReducer();
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchAll = async () => {
@@ -107,7 +110,7 @@ export const Home = () => {
             }
 
             try {
-              planetDetailsById = await ApiService.getVehicleById(car.uid);
+              vehicleDetailsById = await ApiService.getVehicleById(car.uid); // <-- nombre correcto
             } catch (e) {
               console.warn(`No extra info for ${car.name}`);
             }
@@ -130,16 +133,17 @@ export const Home = () => {
         dispatch({ type: 'update_character_list', payload: completeCharacter });
         dispatch({ type: 'update_planet_list', payload: completePlanet });
         dispatch({ type: 'update_vehicle_list', payload: completeVehicle });
+        setLoading(false);
       } catch (error) {
         console.error('Error fetching lists:', error);
       }
     };
 
     fetchAll();
-    console.log('character fetched', store.characterList);
-    console.log('planet fetched', store.planetList);
-    console.log('vehicle fetched', store.vehicleList);
   }, []);
+  console.log('character fetched', store.characterList);
+  console.log('planet fetched', store.planetList);
+  console.log('vehicle fetched', store.vehicleList);
 
   const isFavorite = (uid, category) => {
     return (
@@ -162,25 +166,84 @@ export const Home = () => {
     }
   };
 
+  if (loading) return <Loader />;
+
   return (
     <div className="text-start m-3">
       <h1>People</h1>
       <div className="overflow-x-auto d-flex flex-row gap-3 p-3">
         {store.characterList.map((person, index) => {
-          return <InfoCards key={person.uid} element={person} />;
+          return (
+            <InfoCards key={person.uid} element={person}>
+              <button
+                onClick={() => navigate(`/people/${person.uid}`)}
+                className="btn btn-outline-primary"
+              >
+                Learn More!
+              </button>
+              <button
+                onClick={() => toggleFavorite(person, 'people')}
+                className="btn btn-outline-warning"
+              >
+                {isFavorite(person.uid, 'people') ? (
+                  <i className="fa-solid fa-heart"></i>
+                ) : (
+                  <i className="fa-regular fa-heart"></i>
+                )}
+              </button>
+            </InfoCards>
+          );
         })}
       </div>
 
       <h1>Planets</h1>
       <div className="overflow-x-auto d-flex flex-row gap-3 p-3">
         {store.planetList.map((planet, index) => {
-          return <InfoCards key={planet.uid} element={planet} />;
+          return (
+            <InfoCards key={planet.uid} element={planet}>
+              <button
+                onClick={() => navigate(`/planets/${planet.uid}`)}
+                className="btn btn-outline-primary"
+              >
+                Learn More!
+              </button>
+              <button
+                onClick={() => toggleFavorite(planet, 'planet')}
+                className="btn btn-outline-warning"
+              >
+                {isFavorite(planet.uid, 'planet') ? (
+                  <i className="fa-solid fa-heart"></i>
+                ) : (
+                  <i className="fa-regular fa-heart"></i>
+                )}
+              </button>
+            </InfoCards>
+          );
         })}
       </div>
       <h1>Vehicles</h1>
       <div className="overflow-x-auto d-flex flex-row gap-3 p-3">
         {store.vehicleList.map((vehicle, index) => {
-          return <InfoCards key={vehicle.uid} element={vehicle} />;
+          return (
+            <InfoCards key={vehicle.uid} element={vehicle}>
+              <button
+                onClick={() => navigate(`/vehicles/${vehicle.uid}`)}
+                className="btn btn-outline-primary"
+              >
+                Learn More!
+              </button>
+              <button
+                onClick={() => toggleFavorite(vehicle, 'vehicle')}
+                className="btn btn-outline-warning"
+              >
+                {isFavorite(vehicle.uid, 'vehicle') ? (
+                  <i className="fa-solid fa-heart"></i>
+                ) : (
+                  <i className="fa-regular fa-heart"></i>
+                )}
+              </button>
+            </InfoCards>
+          );
         })}
       </div>
     </div>
