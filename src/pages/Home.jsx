@@ -1,15 +1,17 @@
 import { InfoCards } from '../components/InfoCards.jsx';
+import Loader from '../components/Loader/Loader.jsx';
 import useGlobalReducer from '../hooks/useGlobalReducer.jsx';
-import { Link } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import '../components/InfoCards.css';
 import ApiService from '../services/ApiService.js';
 
 export const Home = () => {
   const { store, dispatch } = useGlobalReducer();
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-
     const fetchAll = async () => {
       try {
         const [character, planets, vehicles] = await Promise.all([
@@ -108,7 +110,7 @@ export const Home = () => {
             }
 
             try {
-              planetDetailsById = await ApiService.getVehicleById(car.uid);
+              vehicleDetailsById = await ApiService.getVehicleById(car.uid); // <-- nombre correcto
             } catch (e) {
               console.warn(`No extra info for ${car.name}`);
             }
@@ -131,123 +133,17 @@ export const Home = () => {
         dispatch({ type: 'update_character_list', payload: completeCharacter });
         dispatch({ type: 'update_planet_list', payload: completePlanet });
         dispatch({ type: 'update_vehicle_list', payload: completeVehicle });
+        setLoading(false);
       } catch (error) {
         console.error('Error fetching lists:', error);
       }
     };
 
     fetchAll();
-    console.log('character fetched', store.characterList);
-    console.log('planet fetched', store.planetList);
-    console.log('vehicle fetched', store.vehicleList);
   }, []);
-  const fetchAll = async () => {
-    try {
-      const [character, planets, vehicles] = await Promise.all([
-        ApiService.getAllPeople(),
-        ApiService.getAllPlanets(),
-        ApiService.getAllVehicles(),
-      ]);
-
-      dispatch({ type: 'update_character_list', payload: character });
-      dispatch({ type: 'update_planet_list', payload: planets });
-      dispatch({ type: 'update_vehicle_list', payload: vehicles });
-
-      // 1. Agregar imágenes y descripciones a personajes
-      const fetchCaracterImg = await Promise.all(
-        character.map(async (character) => {
-          try {
-            const characterData = await ApiService.getPeopleDetailsByName(character.name);
-            return {
-              ...character,
-              image: characterData?.image || '',
-              description: characterData?.description || '',
-            };
-          } catch (error) {
-            console.warn(`No se encontró info adicional para: ${character.name}`);
-            return character;
-          }
-        })
-      );
-
-      dispatch({ type: 'update_character_list', payload: fetchCaracterImg });
-
-      // 2. Agregar detalles por UID a personajes
-      const fetchCharacterDetails = await Promise.all(
-        character.map(async (character) => {
-          try {
-            const characterData = await ApiService.getPeopleDetailsById(character.uid);
-            return {
-              ...character,
-              gender: characterData.gender,
-              eye_color: characterData.eye_color,
-              skin_color: character.skin_color,
-              hair_color: characterData.hair_color,
-              height: characterData.height,
-              mass: characterData.mass,
-              homeworld: characterData.homeworld,
-            };
-          } catch (error) {
-            return character;
-          }
-        })
-      );
-
-      dispatch({ type: 'update_character_list', payload: fetchCharacterDetails });
-
-      // 3. Agregar imágenes y descripciones a planetas
-      const fetchPlanetImg = await Promise.all(
-        planets.map(async (planet) => {
-          try {
-            const planetData = await ApiService.getPlanetsDetailsByName(planet.name);
-            return {
-              ...planet,
-              image: planetData?.image || '',
-              description: planetData?.description || '',
-            };
-          } catch (error) {
-            return planet;
-          }
-        })
-      );
-
-      dispatch({ type: 'update_planet_list', payload: fetchPlanetImg });
-
-      // 4. Agregar detalles por UID a planetas
-      const fetchPlanetDetails = await Promise.all(
-        planets.map(async (planet) => {
-          try {
-            const planetData = await ApiService.getPlanetById(planet.uid);
-            return {
-              ...planet,
-              climate: planetData.climate,
-              terrain: planetData.terrain,
-              population: planet.population,
-              diameter: planetData.diameter,
-              rotation_period: planetData.rotation_period,
-              orbital_period: planetData.orbital_period,
-              gravity: planetData.gravity,
-              surface_water: planetData.surface_water,
-            };
-          } catch (error) {
-            console.warn(`No se encontró info adicional para: ${planet.name}`);
-            return planet;
-          }
-        })
-      );
-
-      dispatch({ type: 'update_planet_list', payload: fetchPlanetDetails });
-
-    } catch (error) {
-      console.error('Error fetching lists:', error);
-    }
-  };
-
-  fetchAll();
-  console.log('Character fetched', store.characterList);
-  console.log('Planet fetched', store.planetList);
-  console.log('Vehicle fetched', store.vehicleList);
-}, []);
+  console.log('character fetched', store.characterList);
+  console.log('planet fetched', store.planetList);
+  console.log('vehicle fetched', store.vehicleList);
 
   const isFavorite = (uid, category) => {
     return (
@@ -270,25 +166,84 @@ export const Home = () => {
     }
   };
 
+  if (loading) return <Loader />;
+
   return (
     <div className="text-start m-3">
       <h1>People</h1>
       <div className="overflow-x-auto d-flex flex-row gap-3 p-3">
         {store.characterList.map((person, index) => {
-          return <InfoCards key={person.uid} element={person} />;
+          return (
+            <InfoCards key={person.uid} element={person}>
+              <button
+                onClick={() => navigate(`/people/${person.uid}`)}
+                className="btn btn-outline-primary"
+              >
+                Learn More!
+              </button>
+              <button
+                onClick={() => toggleFavorite(person, 'people')}
+                className="btn btn-outline-warning"
+              >
+                {isFavorite(person.uid, 'people') ? (
+                  <i className="fa-solid fa-heart"></i>
+                ) : (
+                  <i className="fa-regular fa-heart"></i>
+                )}
+              </button>
+            </InfoCards>
+          );
         })}
       </div>
 
       <h1>Planets</h1>
       <div className="overflow-x-auto d-flex flex-row gap-3 p-3">
         {store.planetList.map((planet, index) => {
-          return <InfoCards key={planet.uid} element={planet} />;
+          return (
+            <InfoCards key={planet.uid} element={planet}>
+              <button
+                onClick={() => navigate(`/planets/${planet.uid}`)}
+                className="btn btn-outline-primary"
+              >
+                Learn More!
+              </button>
+              <button
+                onClick={() => toggleFavorite(planet, 'planet')}
+                className="btn btn-outline-warning"
+              >
+                {isFavorite(planet.uid, 'planet') ? (
+                  <i className="fa-solid fa-heart"></i>
+                ) : (
+                  <i className="fa-regular fa-heart"></i>
+                )}
+              </button>
+            </InfoCards>
+          );
         })}
       </div>
       <h1>Vehicles</h1>
       <div className="overflow-x-auto d-flex flex-row gap-3 p-3">
         {store.vehicleList.map((vehicle, index) => {
-          return <InfoCards key={vehicle.uid} element={vehicle} />;
+          return (
+            <InfoCards key={vehicle.uid} element={vehicle}>
+              <button
+                onClick={() => navigate(`/vehicles/${vehicle.uid}`)}
+                className="btn btn-outline-primary"
+              >
+                Learn More!
+              </button>
+              <button
+                onClick={() => toggleFavorite(vehicle, 'vehicle')}
+                className="btn btn-outline-warning"
+              >
+                {isFavorite(vehicle.uid, 'vehicle') ? (
+                  <i className="fa-solid fa-heart"></i>
+                ) : (
+                  <i className="fa-regular fa-heart"></i>
+                )}
+              </button>
+            </InfoCards>
+          );
         })}
       </div>
     </div>
