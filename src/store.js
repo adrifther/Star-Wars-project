@@ -123,8 +123,9 @@ export default function storeReducer(store, action = {}) {
         const favoriteList = action.payload;
       return {
           ...store,
-          favoriteList
+         favoriteList: [...store.favoriteList, action.payload]
         };
+
       case 'remove_favorite':
         return {
           ...store,
