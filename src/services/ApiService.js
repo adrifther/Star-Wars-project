@@ -59,7 +59,7 @@ export const getAllPlanets = async () => {
 
 export const getAllVehicles = async () => {
     try{
-        const response = await swapiService.get('/vehicles?page=1&limit=60');
+        const response = await swapiService.get('/vehicles?page=1&limit=10');
         return response.data.results;
     }
     catch(error) {

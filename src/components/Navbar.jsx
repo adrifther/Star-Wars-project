@@ -1,6 +1,11 @@
 import { Link } from 'react-router-dom';
+import useGlobalReducer from '../hooks/useGlobalReducer.jsx';
 
 export const Navbar = () => {
+  const { store, dispatch } = useGlobalReducer();
+
+  const finalList = store.favoriteList.map((item) => item.name)
+
   return (
     <nav className="navbar navbar-light bg-transparent">
       <div className="container">
@@ -23,7 +28,7 @@ export const Navbar = () => {
             Favorites <i className="fa-regular fa-heart"></i>
           </button>
           <ul className="dropdown-menu">
-            <li></li>
+            {`${finalList}`}
           </ul>
         </div>
       </div>

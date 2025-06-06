@@ -153,16 +153,11 @@ export const Home = () => {
   };
 
   const toggleFavorite = (item, category) => {
+    const favoriteItem = { uid: item.uid, name: item.name, category };
     if (isFavorite(item.uid, category)) {
-      dispatch({
-        type: 'remove_favorite',
-        payload: { uid: item.uid, category },
-      });
+      dispatch({type: 'remove_favorite', payload: favoriteItem,});
     } else {
-      dispatch({
-        type: 'add_favorite',
-        payload: { uid: item.uid, name: item.name, category },
-      });
+      dispatch({type: 'add_favorite', payload: favoriteItem,});
     }
   };
 
