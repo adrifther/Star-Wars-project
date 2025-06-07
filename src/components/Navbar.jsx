@@ -4,7 +4,9 @@ import useGlobalReducer from '../hooks/useGlobalReducer.jsx';
 export const Navbar = () => {
   const { store, dispatch } = useGlobalReducer();
 
-  const finalList = store.favoriteList.map((item) => item.name)
+  const removeFavorite = (item) => {
+    dispatch({ type: 'remove_favorite', payload: item });
+  };
 
   return (
     <nav className="navbar navbar-light bg-transparent">
@@ -13,7 +15,7 @@ export const Navbar = () => {
           <span className="navbar-brand mb-0 h1">
             <img
               src="https://wallpapers.com/images/featured/logo-de-star-wars-xcw4lfbj6xjx2qvm.jpg"
-              alt=""
+              alt="Star Wars Logo"
               style={{ width: '200px', height: '110px' }}
             />
           </span>
@@ -27,8 +29,24 @@ export const Navbar = () => {
           >
             Favorites <i className="fa-regular fa-heart"></i>
           </button>
-          <ul className="dropdown-menu">
-            {`${finalList}`}
+          <ul className="dropdown-menu dropdown-menu-end">
+            {store.favoriteList.length === 0 ? (
+              <li className="dropdown-item text-muted">No favorites</li>
+            ) : (
+              store.favoriteList.map((item, index) => (
+                <li key={index} className="dropdown-item d-flex justify-content-between align-items-center">
+                  <Link to={`/${item.category}/${item.uid}`} className="text-decoration-none text-dark">
+                    {item.name}
+                  </Link>
+                  <button
+                    onClick={() => removeFavorite(item)}
+                    className="btn btn-sm btn-outline-danger ms-2"
+                  >
+                    <i className="fa-solid fa-trash"></i>
+                  </button>
+                </li>
+              ))
+            )}
           </ul>
         </div>
       </div>
