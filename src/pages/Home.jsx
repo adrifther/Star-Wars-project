@@ -203,10 +203,10 @@ export const Home = () => {
                 Learn More!
               </button>
               <button
-                onClick={() => toggleFavorite(planet, 'planet')}
+                onClick={() => toggleFavorite(planet, 'planets')}
                 className="btn btn-outline-warning"
               >
-                {isFavorite(planet.uid, 'planet') ? (
+                {isFavorite(planet.uid, 'planets') ? (
                   <i className="fa-solid fa-heart"></i>
                 ) : (
                   <i className="fa-regular fa-heart"></i>
@@ -228,10 +228,10 @@ export const Home = () => {
                 Learn More!
               </button>
               <button
-                onClick={() => toggleFavorite(vehicle, 'vehicle')}
+                onClick={() => toggleFavorite(vehicle, 'vehicles')}
                 className="btn btn-outline-warning"
               >
-                {isFavorite(vehicle.uid, 'vehicle') ? (
+                {isFavorite(vehicle.uid, 'vehicles') ? (
                   <i className="fa-solid fa-heart"></i>
                 ) : (
                   <i className="fa-regular fa-heart"></i>
